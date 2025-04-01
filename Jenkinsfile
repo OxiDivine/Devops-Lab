@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/OxiDivine/Devops-Lab'
+                git 'https://github.com/OxiDivine/Devops-Lab.git'
             }
         }
         stage('Build') {

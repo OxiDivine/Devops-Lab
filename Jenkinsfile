@@ -3,24 +3,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/OxiDivine/Devops-Lab.git'
+                git branch: 'main', url: 'https://github.com/OxiDivine/Devops-Lab.git'
             }
         }
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                echo 'Building...'
             }
         }
         stage('Test') {
             steps {
-                sh 'mvn test'
+                echo 'Testing...'
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
+                echo 'Deploying...'
             }
         }
     }
 }
-

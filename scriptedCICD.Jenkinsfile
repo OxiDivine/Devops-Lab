@@ -12,48 +12,69 @@ node {
         // Stage 1: Checkout the code from the Git repository
         stage('Checkout') {
             echo 'Checking out code from Git repository...'
-            checkout scm
+            checkout([
+                $class: 'GitSCM',
+                branches: [[name: "*/${BRANCH}"]],
+                userRemoteConfigs: [[url: "${GIT_REPO}"]]
+            ])
         }
         
-        // Stage 2: Build the project (this can be adjusted for your tech stack)
+        // Stage 2: Build the project (Windows compatible)
         stage('Build') {
             echo 'Building the project...'
-            // For example, if you use Maven for a Java project
-            // sh 'mvn clean install'
             
-            // If it's a Node.js project
-            sh 'npm install'
+            // For Maven Java project on Windows:
+            bat 'mvn clean install'
+            
+            // For Node.js project on Windows:
+            // bat 'npm install'
+            
+            // For .NET project:
+            // bat 'dotnet build'
         }
 
-        // Stage 3: Run tests
+        // Stage 3: Run tests (Windows compatible)
         stage('Test') {
             echo 'Running tests...'
-            // Example for running tests (adjust based on your tech stack)
-            // sh 'mvn test'  // For Java projects
-            // sh 'npm test'  // For Node.js projects
+            
+            // For Maven tests:
+            bat 'mvn test'
+            
+            // For Node.js tests:
+            // bat 'npm test'
+            
+            // For .NET tests:
+            // bat 'dotnet test'
         }
         
         // Stage 4: Deploy to staging environment
         stage('Deploy to Staging') {
             echo 'Deploying to staging environment...'
-            // You can use `sh` or `bat` to execute deploy commands
-            // Example: 
-            // sh 'kubectl apply -f deployment.yaml'
-            // Or deploy to your cloud provider or test server
-            echo 'Deploying application...'
+            
+            // Example deployment commands for Windows:
+            // bat 'kubectl apply -f deployment.yaml'
+            // Or for Azure:
+            // bat 'az webapp deployment source config-zip --resource-group myResourceGroup --name myAppName --src target/myapp.zip'
+            
+            echo 'Deployment commands would execute here...'
         }
 
-        // Optional: Archive build artifacts or deploy to production
+        // Optional: Archive build artifacts
         stage('Archive') {
             echo 'Archiving build artifacts...'
-            archiveArtifacts '**/target/*.jar'  // Adjust for your build artifacts (e.g., JAR files for Java)
+            
+            // Archive JAR files for Java projects:
+            archiveArtifacts 'target/*.jar'
+            
+            // Or for Node.js projects:
+            // archiveArtifacts 'build/**/*'
         }
 
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
-        throw e
+        error "Pipeline failed: ${e.getMessage()}"
     } finally {
-        // Clean up workspace or perform post-build actions
+        // Clean up workspace
         cleanWs()
     }
 }

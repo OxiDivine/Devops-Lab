@@ -1,0 +1,26 @@
+node {
+    stage('Checkout') {
+        git branch: 'main', url: 'https://github.com/OxiDivine/Devops-Lab.git'
+    }
+
+    stage('Build') {
+        echo 'Building the experiment...'
+        sh 'python setup.py install' // Replace with your build command
+    }
+
+    stage('Test') {
+        echo 'Running tests...'
+        sh 'pytest tests/' // Replace with actual test command
+    }
+
+    stage('Deploy') {
+        echo 'Deploying the experiment...'
+        sh 'docker build -t experiment-image .' // Optional Docker deployment
+        sh 'docker run -d --name experiment-container experiment-image'
+    }
+
+    stage('Notify') {
+        echo 'Sending notification...'
+        sh 'curl -X POST -H "Content-Type: application/json" -d "{\\"text\\": \\"Deployment Successful\\"}" https://hooks.slack.com/services/your-webhook-url'
+    }
+}
